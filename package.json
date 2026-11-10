@@ -1,5 +1,5 @@
 {
-  "name": "Banglish-English Assistant",
+  "name": "banglish-english-assistant",
   "version": "1.0.0",
   "description": "100% JavaScript Banglish to English Business Assistant (PWA + Chrome Extension)",
   "main": "server.js",
@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@capacitor/android": "^8.6.0",
+    "@capacitor/cli": "^8.6.0",
     "@capacitor/core": "^8.6.0"
   }
 }

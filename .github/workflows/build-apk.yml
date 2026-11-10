@@ -25,11 +25,6 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Install Dependencies
-        run: |
-          npm install --legacy-peer-deps
-          npx cap sync android
-
       - name: Build Android Debug APK
         run: |
           cd android
