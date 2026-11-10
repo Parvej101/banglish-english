@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Banglish Floating Button (WhatsApp & Meta Business)",
+  "version": "1.0.0",
+  "description": "Select any text in WhatsApp Web or Meta Business Suite to show a floating button for instant Banglish->English or Bangla Meaning + Short Reply!",
+  "permissions": ["storage", "clipboardWrite"],
+  "host_permissions": ["https://api.groq.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
+

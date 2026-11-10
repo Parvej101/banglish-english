@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Banglish → English Business Assistant</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div>
+          <h1>Banglish <span class="arrow">→</span> English</h1>
+          <p class="subtitle">Meta Business &amp; WhatsApp Fast Reply</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div id="hotkeyBadge" class="hotkey-badge hidden" title="PC Global Shortcut সক্রিয় আছে">
+          <span class="dot"></span>
+          <span>PC: <b>Alt+Q</b> / <b>Alt+W</b></span>
+        </div>
+        <button id="openSettingsBtn" class="icon-btn" title="Settings & API Key">
+          ⚙️ <span class="btn-label">Settings</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- API Key Warning Banner (shown if key is missing) -->
+    <div id="apiKeyBanner" class="api-banner hidden">
+      <div>
+        <strong>🔑 API Key প্রয়োজন:</strong> শুরু করার জন্য আপনার ফ্রি Groq API Key (Recommended) বা Gemini Key সেট করুন।
+      </div>
+      <button id="bannerSetupBtn" class="small-primary-btn">Set API Key</button>
+    </div>
+
+    <!-- Mode Switcher Tabs -->
+    <div class="tabs-bar" role="tablist">
+      <button class="tab-btn active" data-mode="convert" id="tabConvert">
+        ⚡ Quick Convert
+        <span class="tab-sub">Banglish → English</span>
+      </button>
+      <button class="tab-btn" data-mode="reply" id="tabReply">
+        💬 Customer Reply
+        <span class="tab-sub">Customer Msg + Hint</span>
+      </button>
+    </div>
+
+    <!-- Tone Selector -->
+    <div class="tone-section">
+      <span class="section-label">Tone:</span>
+      <div class="tone-pills" id="tonePills">
+        <button class="tone-pill active" data-tone="polite">🤝 Polite Support</button>
+        <button class="tone-pill" data-tone="short">⚡ Short (WhatsApp)</button>
+        <button class="tone-pill" data-tone="sales">🎯 Sales / Convince</button>
+        <button class="tone-pill" data-tone="apology">🙏 Apology / Issue</button>
+      </div>
+    </div>
+
+    <!-- Main Workspace Grid -->
+    <main class="workspace">
+      <!-- LEFT / TOP: Input Panel -->
+      <section class="panel input-panel">
+        <!-- MODE 1: QUICK CONVERT -->
+        <div id="modeConvertPanel" class="mode-panel">
+          <!-- 1-Tap Mobile & PC Hero Button -->
+          <button id="oneTapPasteConvertBtn" class="hero-paste-btn">
+            <span class="hero-icon">📋</span>
+            <div class="hero-text">
+              <strong>1-Tap Paste, Convert &amp; Copy</strong>
+              <span>ক্লিপবোর্ড থেকে পেস্ট করে English কনভার্ট করে অটো-কপি করবে</span>
+            </div>
+          </button>
+
+          <div class="field-header">
+            <label for="banglishInput">আপনার মেসেজ লিখুন (Banglish / বাংলা)</label>
+            <div class="field-tools">
+              <button id="pasteInputBtn" class="mini-btn" type="button">📋 Paste</button>
+              <button id="clearInputBtn" class="mini-btn" type="button">✕ Clear</button>
+            </div>
+          </div>
+
+          <textarea
+            id="banglishInput"
+            rows="4"
+            placeholder="উদাহরণ: bhai apnar order ta confirm hoyeche, kalke steadfast courier e pathano hobe. delivery charge 60 tk..."
+          ></textarea>
+
+          <!-- Quick Business Templates -->
+          <div class="quick-chips-wrap">
+            <span class="chips-title">Quick Drafts:</span>
+            <div class="quick-chips">
+              <button type="button" class="chip" data-text="apnar order ta confirm korar jonno nam, full address ar phone number din please.">📦 Ask Address</button>
+              <button type="button" class="chip" data-text="apnar parcel ti ajke courier e deya hoyeche, 1-2 din er moddhe delivery paben inshallah.">🚚 Dispatched</button>
+              <button type="button" class="chip" data-text="dhakar vitore delivery charge 60 taka ar dhakar baire 120 taka. cash on delivery available.">💰 Delivery Info</button>
+              <button type="button" class="chip" data-text="sorry ei product ta ekhon stock out, 3-4 din por abar restock hobe.">⏳ Out of Stock</button>
+              <button type="button" class="chip" data-text="courier er karone delivery te ektu deri hocche, amra khub dukkhito. ajke ba kalker moddhe peye jaben.">🙏 Delay Apology</button>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <label class="auto-copy-toggle">
+              <input type="checkbox" id="autoCopyCheckbox" checked />
+              <span>কনভার্ট হলেই অটো-কপি (Auto-Copy)</span>
+            </label>
+            <button id="convertActionBtn" class="primary-action-btn" type="button">
+              ✨ Convert to English <span class="kbd-hint">Ctrl+Enter</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- MODE 2: CUSTOMER REPLY GENERATOR -->
+        <div id="modeReplyPanel" class="mode-panel hidden">
+          <div class="field-header">
+            <label for="customerMsgInput">১. কাস্টমারের মেসেজ (Customer's Message)</label>
+            <div class="field-tools">
+              <button id="pasteCustomerBtn" class="mini-btn highlight-mini" type="button">📋 Paste Customer Msg</button>
+              <button id="clearCustomerBtn" class="mini-btn" type="button">✕ Clear</button>
+            </div>
+          </div>
+          <textarea
+            id="customerMsgInput"
+            rows="3"
+            placeholder="কাস্টমার WhatsApp বা মেসেঞ্জারে যা পাঠিয়েছে তা এখানে Paste করুন..."
+          ></textarea>
+
+          <div class="field-header mt-12">
+            <label for="replyHintInput">২. আপনার সংক্ষিপ্ত উত্তর হিন্ট (Banglish / বাংলা)</label>
+            <div class="field-tools">
+              <button id="clearHintBtn" class="mini-btn" type="button">✕ Clear</button>
+            </div>
+          </div>
+          <textarea
+            id="replyHintInput"
+            rows="3"
+            placeholder="উদাহরণ: dam 1450 tk, 100 tk advance bkash korte hobe, baki taka delivery man ke dibe..."
+          ></textarea>
+
+          <div class="action-row mt-12">
+            <button id="pasteAndReplyBtn" class="secondary-action-btn" type="button" title="ক্লিপবোর্ড থেকে কাস্টমারের মেসেজ পেস্ট করে রিপ্লাই তৈরি করবে">
+              📋 Paste Msg &amp; Reply
+            </button>
+            <button id="generateReplyBtn" class="primary-action-btn" type="button">
+              💬 Generate Reply &amp; Copy <span class="kbd-hint">Ctrl+Enter</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT / BOTTOM: Output Panel -->
+      <section class="panel output-panel">
+        <div class="output-header">
+          <h2>✅ English Output (Ready to Paste)</h2>
+          <span id="statusIndicator" class="status-pill">Ready</span>
+        </div>
+
+        <!-- Customer Summary Box (Only in Customer Reply Mode) -->
+        <div id="customerSummaryBox" class="summary-box hidden">
+          <span class="summary-label">🧐 কাস্টমার কী জানতে চেয়েছেন (বাংলা অর্থ):</span>
+          <p id="customerSummaryText" class="summary-content"></p>
+        </div>
+
+        <!-- Primary Output Card -->
+        <div class="result-card primary-card" id="primaryCard">
+          <div class="card-top">
+            <span class="badge-primary">⭐ Recommended English Reply (Auto-Copied)</span>
+            <button class="copy-btn" data-target="outputPrimary">📋 Copy</button>
+          </div>
+          <div id="outputPrimary" class="result-text empty-placeholder">
+            এখানে আপনার প্রফেশনাল English মেসেজ তৈরি হবে...
+          </div>
+          <div id="primaryBanglaBox" class="meaning-sub-box hidden">
+            <span class="sub-label">💡 এই উত্তরের বাংলা অর্থ:</span>
+            <span id="outputPrimaryBangla"></span>
+          </div>
+        </div>
+
+        <!-- Suggested Replies Grid (Mode 2) -->
+        <div id="suggestedRepliesWrap" class="suggested-wrap hidden">
+          <h3 class="suggested-title">💡 অন্যান্য সাজেস্টেড রিপ্লাই (Suggested Options):</h3>
+          <div id="suggestedRepliesList" class="suggested-cards"></div>
+        </div>
+
+        <!-- Alternative Variations (Mode 1: Convert) -->
+        <div class="variations-grid" id="variationsGrid">
+          <div class="result-card">
+            <div class="card-top">
+              <span class="badge-sub">⚡ Short (WhatsApp)</span>
+              <button class="copy-btn" data-target="outputShort">📋 Copy</button>
+            </div>
+            <div id="outputShort" class="result-text sub-text">—</div>
+          </div>
+
+          <div class="result-card">
+            <div class="card-top">
+              <span class="badge-sub">🤝 Extra Polite</span>
+              <button class="copy-btn" data-target="outputPolite">📋 Copy</button>
+            </div>
+            <div id="outputPolite" class="result-text sub-text">—</div>
+          </div>
+        </div>
+
+        <!-- Recent History -->
+        <div class="history-section">
+          <div class="history-header">
+            <h3>🕒 সাম্প্রতিক কনভার্সন (Recent History)</h3>
+            <button id="clearHistoryBtn" class="text-btn">Clear</button>
+          </div>
+          <div id="historyList" class="history-list">
+            <p class="empty-history">এখনো কোনো মেসেজ কনভার্ট করা হয়নি।</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- PC Global Shortcut Help Footer -->
+    <footer class="app-footer">
+      <div class="shortcut-tips">
+        <span>💻 <strong>PC Global Shortcut:</strong> যেকোনো অ্যাপে Banglish লিখে সিলেক্ট করে <kbd>Alt + Q</kbd> চাপলে অটোমেটিক সেখানেই English পেস্ট হয়ে যাবে!</span>
+        <span>💬 কাস্টমারের মেসেজ কপি করে <kbd>Alt + W</kbd> চাপলে সরাসরি <strong>Customer Reply</strong> মোড ওপেন হবে।</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>⚙️ Settings &amp; Business Setup</h2>
+        <button id="closeSettingsBtn" class="icon-btn">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="apiKeyInput">🔑 AI API Key (Groq বা Gemini)</label>
+          <div class="input-with-btn">
+            <input
+              type="password"
+              id="apiKeyInput"
+              placeholder="gsk_... (Groq) অথবা AIzaSy... (Gemini)"
+              autocomplete="off"
+            />
+            <button type="button" id="toggleKeyVisibilityBtn" class="mini-btn">👁️ Show</button>
+          </div>
+          <small class="help-text">
+            ⭐ <b>Groq (Recommended - ১০০% ফ্রি ও কখনো সাসপেন্ড হয় না):</b> <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> থেকে ফ্রি Key নিন।<br />
+            অথবা Google AI Studio: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com</a>
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="businessContextInput">🏪 আপনার বিজনেসের স্থায়ী তথ্য (ঐচ্ছিক)</label>
+          <textarea
+            id="businessContextInput"
+            rows="3"
+            placeholder="উদাহরণ: আমাদের ডেলিভারি চার্জ ঢাকার ভেতরে ৬০ টাকা, ঢাকার বাইরে ১২০ টাকা। ক্যাশ অন ডেলিভারি সুবিধা আছে। ডেলিভারি সময় ২-৩ দিন।"
+          ></textarea>
+          <small class="help-text">
+            এখানে আপনার ডেলিভারি চার্জ বা নিয়ম লিখে রাখলে AI রিপ্লাই দেওয়ার সময় নিজে থেকেই সঠিক তথ্য ব্যবহার করবে।
+          </small>
+        </div>
+
+        <div id="lanUrlBox" class="lan-info-box hidden">
+          <strong>📱 মোবাইলে ব্যবহার করার লিংক (একই Wi-Fi):</strong>
+          <div id="lanUrlList" class="lan-url-list"></div>
+          <small>আপনার মোবাইলের ব্রাউজারে উপরের লিংকে ঢুকে <b>"Add to Home Screen"</b> করে নিন।</small>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="saveSettingsBtn" class="primary-action-btn">💾 Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/gemini.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
+

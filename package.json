@@ -1,0 +1,9 @@
+{
+  "name": "Banglish-English Assistant",
+  "version": "1.0.0",
+  "description": "100% JavaScript Banglish to English Business Assistant (PWA + Chrome Extension)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

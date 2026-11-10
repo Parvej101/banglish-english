@@ -1,0 +1,40 @@
+[
+  {
+    "id": 1,
+    "name": "Banglish-to-English Floating AI",
+    "trigger": {
+      "type": "clipboard_changed"
+    },
+    "actions": [
+      {
+        "type": "http_request",
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer YOUR_GROQ_API_KEY"
+        },
+        "body": {
+          "model": "qwen/qwen3.8-27b",
+          "messages": [
+            {
+              "role": "system",
+              "content": "If input is customer message in English: translate to simple Bangla & give short English reply. If input is Banglish/Bangla: translate directly to business English."
+            },
+            {
+              "role": "user",
+              "content": "{clipboard}"
+            }
+          ]
+        }
+      },
+      {
+        "type": "floating_dialog",
+        "title": "⚡ AI Fast Assistant",
+        "message": "{http_response}",
+        "button": "Auto Copy English & Paste"
+      }
+    ]
+  }
+]
+
