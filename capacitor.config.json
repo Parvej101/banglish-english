@@ -1,0 +1,9 @@
+{
+  "appId": "com.banglish.assistant",
+  "appName": "Banglish Assistant",
+  "webDir": "public",
+  "server": {
+    "url": "https://banglish-english.vercel.app",
+    "cleartext": true
+  }
+}
